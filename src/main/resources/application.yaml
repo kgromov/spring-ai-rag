@@ -1,7 +1,6 @@
 spring:
   application:
     name: spring-ai-rag
-#Pass API key as environment variable, e.g. -DOPENAI_API_KEY=your-api-key
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}

@@ -13,22 +13,18 @@ import org.springframework.context.annotation.Configuration;
 import java.io.File;
 import java.util.List;
 
-/**
- * Created by jt, Spring Framework Guru.
- */
 @Slf4j
 @Configuration
 public class VectorStoreConfig {
     @Bean
     SimpleVectorStore simpleVectorStore(EmbeddingClient embeddingClient, VectorStoreProperties vectorStoreProperties) {
         var store =  new SimpleVectorStore(embeddingClient);
-        File vectorStoreFile = new File(vectorStoreProperties.getVectorStorePath());
-
+        File vectorStoreFile = new File(vectorStoreProperties.vectorStorePath());
         if (vectorStoreFile.exists()) {
             store.load(vectorStoreFile);
         } else {
             log.debug("Loading documents into vector store");
-            vectorStoreProperties.getDocumentsToLoad().forEach(document -> {
+            vectorStoreProperties.documentsToLoad().forEach(document -> {
                 log.debug("Loading document: " + document.getFilename());
                 TikaDocumentReader documentReader = new TikaDocumentReader(document);
                 List<Document> docs = documentReader.get();
@@ -36,10 +32,8 @@ public class VectorStoreConfig {
                 List<Document> splitDocs = textSplitter.apply(docs);
                 store.add(splitDocs);
             });
-
             store.save(vectorStoreFile);
         }
-
         return store;
     }
 }
