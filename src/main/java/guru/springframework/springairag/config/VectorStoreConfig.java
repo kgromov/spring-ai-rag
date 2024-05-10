@@ -8,6 +8,7 @@ import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TextSplitter;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StopWatch;
@@ -22,7 +23,7 @@ import java.util.List;
 public class VectorStoreConfig {
 
     @Bean
-    SimpleVectorStore simpleVectorStore(EmbeddingClient embeddingClient, VectorStoreProperties vectorStoreProperties) {
+    VectorStore simpleVectorStore(EmbeddingClient embeddingClient, VectorStoreProperties vectorStoreProperties) {
         var store =  new SimpleVectorStore(embeddingClient);
         File vectorStoreFile = new File(vectorStoreProperties.vectorStorePath());
         if (vectorStoreFile.exists()) {
@@ -52,7 +53,7 @@ public class VectorStoreConfig {
         stopWatch.start("Save data to vector store");
         try {
             vectorStoreProperties.documentsToLoad().forEach(document -> {
-                log.debug("Loading document: " + document.getFilename());
+                log.debug("Loading document: {}", document.getFilename());
                 TikaDocumentReader documentReader = new TikaDocumentReader(document);
                 List<Document> docs = documentReader.get();
                 TextSplitter textSplitter = new TokenTextSplitter();
