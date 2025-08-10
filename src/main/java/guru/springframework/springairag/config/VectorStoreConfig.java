@@ -2,8 +2,11 @@ package guru.springframework.springairag.config;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.embedding.EmbeddingClient;
+import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
+import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TextSplitter;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
@@ -23,8 +26,8 @@ import java.util.List;
 public class VectorStoreConfig {
 
     @Bean
-    VectorStore simpleVectorStore(EmbeddingClient embeddingClient, VectorStoreProperties vectorStoreProperties) {
-        var store =  new SimpleVectorStore(embeddingClient);
+    VectorStore simpleVectorStore(EmbeddingModel embeddingModel, VectorStoreProperties vectorStoreProperties) {
+        var store = SimpleVectorStore.builder(embeddingModel).build();
         File vectorStoreFile = new File(vectorStoreProperties.vectorStorePath());
         if (vectorStoreFile.exists()) {
             this.loadData(store, vectorStoreFile);
@@ -32,6 +35,19 @@ public class VectorStoreConfig {
             this.saveData(vectorStoreProperties, store, vectorStoreFile);
         }
         return store;
+    }
+
+    @Bean
+    ChatClient chatClient(ChatClient.Builder builder, VectorStore vectorStore) {
+        return builder
+                .defaultAdvisors(RetrievalAugmentationAdvisor.builder()
+                        .documentRetriever(VectorStoreDocumentRetriever.builder()
+                                .vectorStore(vectorStore)
+                                .similarityThreshold(0.5)
+                                .topK(4)
+                                .build())
+                        .build())
+                .build();
     }
 
     private void loadData(SimpleVectorStore store, File vectorStoreFile) {
