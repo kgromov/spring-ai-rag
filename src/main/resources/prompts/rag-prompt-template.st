@@ -5,3 +5,6 @@ isn't found in the DOCUMENTS section, simply state that you don't know the answe
 
 QUESTION:
 {input}
+
+DOCUMENTS:
+{documents}

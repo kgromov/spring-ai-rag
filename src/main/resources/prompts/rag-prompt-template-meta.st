@@ -7,3 +7,6 @@ QUESTION:
 
 The documents are in a tabular dataset containing the following columns:
 id,title (title of move),genres,original_language,overview,production_companies,release_date,budget (USD, format as $0,000),revenue (USD, format as $0,000),runtime (in minutes - display as hours and minutes),credits (cast or actors)
+
+DOCUMENTS:
+{documents}
