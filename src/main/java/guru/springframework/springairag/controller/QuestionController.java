@@ -2,6 +2,7 @@ package guru.springframework.springairag.controller;
 
 import guru.springframework.springairag.model.Answer;
 import guru.springframework.springairag.model.Question;
+import guru.springframework.springairag.service.AIAdvisorBasedService;
 import guru.springframework.springairag.service.AIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,10 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class QuestionController {
-    private final AIService AIService;
+    private final AIService aiService;
+    private final AIAdvisorBasedService aiAdvisorBasedService;
 
     @PostMapping("/ask")
     private Answer ask(@RequestBody Question question) {
-        return AIService.getAnswer(question);
+        return aiAdvisorBasedService.getAnswer(question);
     }
 }
